@@ -1,0 +1,18 @@
+*{
+	margin: 0;
+	padding: 0;
+	background-color: #333;
+}
+
+#banner{
+	background-color: #111;
+	color: white;
+	font-size: 2em;
+}
+
+.box{
+	border: solid black 1px;
+	background-color: #FFF;
+	padding: 5px;
+	margin: 5px;
+}
