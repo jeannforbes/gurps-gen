@@ -10,10 +10,61 @@
 <body>
 	<header>GURPS Character Generator</header>
 	<div id='character-container'>
-		<div id='character-description' class='.box'></div>
-		<div id='character-attributes' class='.box'></div>
-		<div id='character-advantages' class='.box'></div>
-		<div id='character-disadvantages' class='.box'></div>
-		<div id='character-skills' class='.box'></div>
+		<div id='character-description' class='box'>
+			<span><label>Name: </label><input type='text'></span>
+			<span><label>Player: </label><input type='text'></span>
+			<span><label>Height: </label><input type='text'></span>
+			<span><label>Weight: </label><input type='text'></span>
+			<span><label>Size Modifier: </label><input type='text'></span>
+			<span><label>Age: </label><input type='text'></span>
+			<span><label>Description: </label><textarea type='text'></textarea></span>
+		</div>
+		<div id='character-attributes' class='box'>
+			<div class='column'>
+			<span><label>ST</label></span>
+			<span><label>DX</label></span>
+			<span><label>IQ</label></span>
+			<span><label>HT</label></span>
+			</div>
+			<div class='column'>
+			<span></label><input type='text'></span>
+			<span></label><input type='text'></span>
+			<span></label><input type='text'></span>
+			<span></label><input type='text'></span>
+			</div>
+			<div class='column'>
+			<span><label>HP</label></span>
+			<span><label>Per</label></span>
+			<span><label>Will</label></span>
+			<span><label>FP</label></span>
+			</div>
+			<div class='column'>
+			<span></label><input type='text'></span>
+			<span></label><input type='text'></span>
+			<span></label><input type='text'></span>
+			<span></label><input type='text'></span>
+			</div>
+		</div>
+		<div id='character-advantages' class='box'>
+			<div class='title'>Advantages & Perks</div>
+			<div id='advantages' class='column'>
+			</div>
+			<div id='advantages-points' class='column'>
+			</div>
+		</div>
+		<div id='character-disadvantages' class='box'>
+			<div class='title'>Disadvantages & Quirks</div>
+			<div id='disadvantages' class='column'>
+			</div>
+			<div id='disadvantages-points' class='column'>
+			</div>
+		</div>
+		<div id='character-skills' class='box'>
+			<div class='title'>Skills</div>
+			<div id='skills' class='column'>
+			</div>
+			<div id='skills points' class='column'>
+			</div>
+		</div>
 	</div>
 </body>

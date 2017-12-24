@@ -1,18 +1,55 @@
 *{
 	margin: 0;
 	padding: 0;
+}
+
+body{
 	background-color: #333;
 }
 
-#banner{
+header{
 	background-color: #111;
 	color: white;
 	font-size: 2em;
+	padding: 10px;
+}
+
+span{
+	display: inline-block;
+	white-space: nowrap;
 }
 
 .box{
+	position: relative;
 	border: solid black 1px;
 	background-color: #FFF;
 	padding: 5px;
 	margin: 5px;
+}
+
+.column{
+	display: inline-block;
+	max-width: 30%;
+}
+.column span{
+	display: block;
+	font-size: 1.5em;
+	padding: 5px;
+	margin-left: 10px;
+	width: 30px;
+	height: 30px;
+}
+.title{
+	font-size: 1.2em;
+	padding: 5px;
+	text-transform: uppercase;
+	width: 98%;
+	text-align: center;
+	background-color: #DDD;
+}
+
+#character-attributes input{
+	width: 40px;
+	height: 30px;
+	margin-left: -10px;
 }
