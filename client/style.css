@@ -1,6 +1,7 @@
 *{
 	margin: 0;
 	padding: 0;
+	font-family: 'Roboto', sans-serif;
 }
 
 body{
@@ -12,12 +13,37 @@ header{
 	color: white;
 	font-size: 2em;
 	padding: 10px;
+	font-family: 'Rubik', sans-serif;
 }
 
 span{
 	display: inline-block;
 	white-space: nowrap;
 }
+
+button{
+	width: 70px;
+	height: 40px;
+	font-size: 1.3em;
+}
+button:mousedown{
+	background-color: #CCC;
+}
+
+input{
+	padding:2px;
+	margin:2px;
+}
+
+textarea{
+	display: block;
+	min-width: 500px;
+	min-height: 50px;
+}
+
+/*
+ *  CLASSES
+ */
 
 .box{
 	position: relative;
@@ -39,6 +65,7 @@ span{
 	width: 30px;
 	height: 30px;
 }
+
 .title{
 	font-size: 1.2em;
 	padding: 5px;
@@ -48,8 +75,27 @@ span{
 	background-color: #DDD;
 }
 
-#character-attributes input{
+.alias{ width: 80%; }
+.alias, .pointsValue{
+	height: 30px;
+	font-size: 1.1em;
+}
+
+.alt0{ background-color: #FFF; }
+.alt1{ background-color: #EEE; }
+
+/*
+ *  IDs
+ */
+
+#character-attributes input, .pointsValue{
 	width: 40px;
 	height: 30px;
 	margin-left: -10px;
+	font-size: 1.1em;
+}
+
+#character-advantages span, #character-disadvantages span, #character-skills span{
+	width: 100%;
+	display: block;
 }
