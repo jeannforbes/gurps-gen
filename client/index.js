@@ -1,3 +1,6 @@
+let charactersList;
+
+// Character attribute elements
 let name;
 let player;
 let height
@@ -7,12 +10,15 @@ let age;
 let appearance;
 let statST, statDX, statIQ, statHT;
 let statHP, statPer, statWill, statFP;
+let statLift, statSpeed, statMove, statDmg;
 let advantages, disadvantages, skills;
 let inventory, meleeWeapons, rangedWeapons, armor, possessions;
 
 const dq = (element) => { return document.querySelector(element); }
 
 const grabDocElements = () => {
+    charactersList = dq('#charactersList');
+
     name = dq('#charName');
     player = dq('#charPlayer');
     height = dq('#charHeight');
@@ -29,6 +35,10 @@ const grabDocElements = () => {
     statPer = dq('#statPer');
     statWill = dq('#statWill');
     statFP = dq('#statFP');
+    statLift = dq('#statLift');
+    statSpeed = dq('#statSpeed');
+    statMove = dq('#statMove');
+    statDmg = dq('#statDmg');
     advantages = dq('#advantages');
     disadvantages = dq('#disadvantages');
     skills = dq('#skills');
@@ -41,8 +51,7 @@ const grabDocElements = () => {
 
 const deleteEmptyElement = (e) => {
     if( e.keyCode !== 8) return; // If not delete key, return
-    console.log(e.target.value);
-    if( e.target.value.length <= 0 && e.target.parentNode.children.length > 2){
+    if( e.target.value.length <= 0 && e.target.parentNode.parentNode.children.length >= 2){
         e.target.parentNode.parentNode.removeChild(e.target.parentNode);
     }
 }
@@ -55,23 +64,40 @@ const makeListElement = () => {
     input1.className = 'pointsValue';
     span.appendChild(input0);
     span.appendChild(input1);
-    span.onkeydown = deleteEmptyElement;
+    span.onkeyup = deleteEmptyElement;
     return span;
+}
+
+const makeCharacterElement = (data) => {
+    let li = document.createElement('li');
+    li.id = data._id;
+    li.className = 'character';
+    li.innerText = data.name;
+    li.onclick = (e) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/characters/'+data._id);
+        xhr.onload = (e) => {
+            console.dir(e.target.response);
+            li.className += 'active';
+        }
+        xhr.send();
+        return;
+    }
+    charactersList.appendChild(li);
 }
 
 const handleList = (e) => {
     let p, c, last;
-    if(e.keyCode === 13){
-        console.log(document.activeElement);
-    }
+    if(e.keyCode === 8) return;
     else {
-        p = (e.target) ? e.target.parentNode : e;
-        last = (p.children.length > 0) ? p.children[p.children.length-2] : null;
-        if(p.children.length < 2){
+        p = (e.target) ? e.target.parentNode.parentNode : e;
+        last = (p && p.children.length > 0) ? p.children[p.children.length-1] : null;
+        if(last) console.log(last);
+        if(p && !last){
             c = makeListElement();
             p.appendChild(c);
         }
-        else if(last.value.length > 0){
+        else if(last.children[0].value.length > 0){
             c = makeListElement();
             p.appendChild(c);
         }
@@ -122,15 +148,57 @@ const saveCharacter = () => {
     return;
 }
 
+const calculatePer = () => {
+    let offset = statPer.value - 10;
+    statPer.value = statIQ.value + offset;
+}
+
+const calculateWill = () => {
+    let offset = statWill.value - 10;
+    statWill.value = statIQ.value + offset;
+}
+
+const calculateBasicLift = () => {
+    statLift.innerText = Math.floor((statST.value * statST.value) / 5);
+    return statLift.innerText;
+}
+
+const calculateBasicMove = () => {
+    statMove.innerText = Math.floor((statHT.value + statDX.value) / 4);
+    return statMove.innerText;
+}
+
+const calculateBasicSpeed = () => {
+    statSpeed.innerText = (statHT.value + statDX.value) / 4;
+    calculateBasicMove();
+    return statSpeed.innerText;
+}
+
+// Get all characters currently in the database
+const getCharacters = (e) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/characters');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = (e) => { console.dir(e.target.response);};
+    xhr.send();
+    return;
+}
+
 window.onload = () => {
     grabDocElements();
+
     document.querySelector('#saveCharacter').onclick = saveCharacter;
 
     handleList(advantages, 'advantage');
     handleList(disadvantages, 'disadvantage');
     handleList(skills, 'skill');
 
-    advantages.onkeydown = handleList;
-    disadvantages.onkeydown = handleList;
-    skills.onkeydown = handleList;
+    advantages.onkeyup = handleList;
+    disadvantages.onkeyup = handleList;
+    skills.onkeyup = handleList;
+
+    statST.onkeyup = () => calculateBasicLift;
+    statDX.onkeyup = () => calculateBasicSpeed;
+    statIQ.onkeyup = () => { calculatePer(); calculateWill(); }
+    statHT.onkeyup = () => calculateBasicSpeed;
 }

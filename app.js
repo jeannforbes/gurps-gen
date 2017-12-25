@@ -33,12 +33,7 @@ const startServer = () => {
             Character.find( (err, characters) => {
                 if(err) return console.log(err);
                 console.log(characters);
-                request(options, function(err,response,body){
-                    let json = JSON.parse(body);
-                    console.log(json);
-                    res.json(resquest.json);
-                });
-                return res.send(request.json);
+                return res.send(characters);
             });
         });
         app.get('/characters/*', (req, res) => {
@@ -80,7 +75,7 @@ const startServer = () => {
                     possessions  : req.body.possessions
                 }
             });
-            character.saveCharacter();
+            character.save();
             res.status = 200;
             res.send({msg: 'Added character to database'});
         });
@@ -88,12 +83,11 @@ const startServer = () => {
 
     server.listen(PORT);
 
-    app.get('/', (req,res) => {
-    	res.sendFile('index.html', {root: './client/'});
-    });
+    app.get('/', (req,res) => { res.sendFile('index.html', {root: './client/'}); });
     getClientFile('html');
     getClientFile('css');
     getClientFile('js');
+    getClientFile('ico');
 };
 
 startServer();

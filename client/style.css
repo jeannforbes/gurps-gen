@@ -59,7 +59,6 @@ textarea{
 }
 .column span{
 	display: block;
-	font-size: 1.5em;
 	padding: 5px;
 	margin-left: 10px;
 	width: 30px;
@@ -75,24 +74,54 @@ textarea{
 	background-color: #DDD;
 }
 
-.alias{ width: 80%; }
+.alias{ width: 88%; }
+.pointsValue { width: 40px; }
 .alias, .pointsValue{
-	height: 30px;
-	font-size: 1.1em;
+	height: 20px;
+	font-size: 1em;
 }
 
 .alt0{ background-color: #FFF; }
 .alt1{ background-color: #EEE; }
 
+li .active {
+    background-color: #4CAF50;
+    color: white;
+}
+
 /*
  *  IDs
  */
 
-#character-attributes input, .pointsValue{
+ #navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 25%;
+    background-color: #f1f1f1;
+    height: 100%; /* Full height */
+    position: fixed; /* Make it stick, even on scroll */
+    overflow: auto; /* Enable scrolling if the sidenav has too much content */
+}
+
+#character-container{
+	position:relative;
+	width:75%;
+	left: 25%;
+}
+
+#character-attributes{
+	font-size: 1.5em;
+}
+#character-attributes input{
 	width: 40px;
 	height: 30px;
 	margin-left: -10px;
 	font-size: 1.1em;
+}
+
+#character-secondarystats span label{
+	font-size: 14px;
 }
 
 #character-advantages span, #character-disadvantages span, #character-skills span{

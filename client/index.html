@@ -3,6 +3,8 @@
 	<meta charset='utf-8' lang='en' author='jforbes'>
 	<title>GURPS Character Generator</title>
 
+	<link rel="icon" href="hero.ico" type="image/ico" sizes="16x16">
+
 	<link rel='stylesheet' href='style.css'>
 	<link href="https://fonts.googleapis.com/css?family=Roboto|Rubik" rel="stylesheet">
 
@@ -10,12 +12,15 @@
 </head>
 <body>
 	<header>GURPS Character Generator</header>
-	<div id='options'>
-		<div class='box'>
-			<span><button id='saveCharacter'>Save</button></span>
-		</div>
-	</div>
+	<div id='navbar'><ul id='characters-list'></ul></div>
+	
 	<div id='character-container'>
+		<div id='options'>
+			<div class='box'>
+				<button id='saveCharacter'>Save</button>
+				<button id='clearCharacter'>Clear</button>
+			</div>
+		</div>
 		<div id='character-description' class='box'>
 			<span><label>Name: </label><input id='charName' type='text'></span>
 			<span><label>Player: </label><input id='charPlayer' type='text'></span>
@@ -33,10 +38,10 @@
 			<span><label>HT</label></span>
 			</div>
 			<div class='column'>
-			<span><input id='statST' type='text'></span>
-			<span><input id='statDX' type='text'></span>
-			<span><input id='statIQ' type='text'></span>
-			<span><input id='statHT' type='text'></span>
+			<span><input id='statST' type='text' value='10'><label id='ptSt'></label></span>
+			<span><input id='statDX' type='text' value='10'></span>
+			<span><input id='statIQ' type='text' value='10'></span>
+			<span><input id='statHT' type='text' value='10'></span>
 			</div>
 			<div class='column'>
 			<span><label>HP</label></span>
@@ -45,31 +50,29 @@
 			<span><label>FP</label></span>
 			</div>
 			<div class='column'>
-			<span><input id='statHP' type='text'></span>
-			<span><input id='statPer' type='text'></span>
-			<span><input id='statWill' type='text'></span>
-			<span><input id='statFP' type='text'></span>
+			<span><input id='statHP'   type='text' value='10'></span>
+			<span><input id='statPer'  type='text' value='10'></span>
+			<span><input id='statWill' type='text' value='10'></span>
+			<span><input id='statFP'   type='text' value='10'></span>
 			</div>
-			<div class='column'>
-			<span></span>
+			<div id='character-secondarystats' class='column'>
+			<span><label>Basic Lift:  </label><label id='statLift'>20</label></span>
+			<span><label>Basic Speed:  </label id='statSpeed'><label></label></span>
+			<span><label>Basic Move:  </label id='statMove'><label></label></span>
+			<span><label>Damage:  </label id='statDmg'><label></label></span>
 			</div>
 		</div>
 		<div id='character-advantages' class='box'>
 			<div class='title'>Advantages & Perks</div>
-			<div id='advantages' class=''>
-			</div>
+			<div id='advantages' class=''></div>
 		</div>
 		<div id='character-disadvantages' class='box'>
 			<div class='title'>Disadvantages & Quirks</div>
-			<div id='disadvantages' class=''>
-			</div>
-			</div>
+			<div id='disadvantages' class=''></div>
 		</div>
 		<div id='character-skills' class='box'>
 			<div class='title'>Skills</div>
-			<div id='skills' class=''>
-			</div>
-			</div>
+			<div id='skills' class=''></div>
 		</div>
 	</div>
 </body>
