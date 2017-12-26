@@ -62,14 +62,18 @@ const startServer = () => {
                     appearance  : req.body.description.appearance
                 },
                 stats: {
-                    ST  : req.body.stats.ST || 10,
-                    DX  : req.body.stats.DX || 10,
-                    IQ  : req.body.stats.IQ || 10,
-                    HT  : req.body.stats.HT || 10,
-                    HP  : req.body.stats.HP || req.body.stats.ST || 10,
-                    Will: req.body.stats.Will || req.body.stats.IQ || 10,
-                    Per : req.body.stats.Per || req.body.stats.IQ || 10,
-                    FP  : req.body.stats.FP || req.body.stats.HT || 10
+                    ST  : parseInt(req.body.stats.ST) || 10,
+                    DX  : parseInt(req.body.stats.DX) || 10,
+                    IQ  : parseInt(req.body.stats.IQ) || 10,
+                    HT  : parseInt(req.body.stats.HT) || 10,
+                    HP  : parseInt(req.body.stats.HP) 
+                       || parseInt(req.body.stats.ST) || 10,
+                    Will: parseInt(req.body.stats.Will) 
+                       || parseInt(req.body.stats.IQ) || 10,
+                    Per : parseInt(req.body.stats.Per) 
+                       || parseInt(req.body.stats.IQ) || 10,
+                    FP  : parseInt(req.body.stats.FP) 
+                       || parseInt(req.body.stats.HT) || 10
                 },
                 advantages   : req.body.advantages,
                 disadvantages: req.body.disadvantages,

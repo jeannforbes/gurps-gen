@@ -82,7 +82,6 @@ const handleList = (e) => {
     else {
         p = (e.target) ? e.target.parentNode.parentNode : e;
         last = (p && p.children.length > 0) ? p.children[p.children.length-1] : null;
-        if(last) console.log(last);
         if(p && !last){
             c = makeListElement();
             p.appendChild(c);
@@ -95,7 +94,14 @@ const handleList = (e) => {
 }
 
 const getChildrenValues = (parent) => {
-    return [];
+    let result = [];
+    for(let i=0; i<parent.children.length; i++){
+        let child = parent.children[i];
+        let name = child.children[0].value;
+        let points = parseInt(child.children[1].value.replace(' ',''));
+        if(name && points) result.push({name: name, points: points});
+    }
+    return result;
 }
 
 const saveCharacter = () => {
@@ -167,28 +173,23 @@ const loadCharacter = (char) => {
     }
 }
 
-const calculatePer = () => {
-    let offset = statPer.value - 10;
-    statPer.value = statIQ.value + offset;
-}
-
-const calculateWill = () => {
-    let offset = statWill.value - 10;
-    statWill.value = statIQ.value + offset;
-}
-
 const calculateBasicLift = () => {
-    statLift.innerText = Math.floor((statST.value * statST.value) / 5);
+    let ST = parseInt(statST.value) || 10;
+    statLift.innerText = Math.floor((ST*ST) / 5);
     return statLift.innerText;
 }
 
 const calculateBasicMove = () => {
-    statMove.innerText = Math.floor((statHT.value + statDX.value) / 4);
+    let DX = parseInt(statDX.value) || 10;
+    let HT = parseInt(statHT.value) || 10;
+    statMove.innerText = Math.floor((DX+HT) / 4);
     return statMove.innerText;
 }
 
 const calculateBasicSpeed = () => {
-    statSpeed.innerText = (statHT.value + statDX.value) / 4;
+    let DX = parseInt(statDX.value) || 10;
+    let HT = parseInt(statHT.value) || 10;
+    statSpeed.innerText = (DX+HT) / 4;
     calculateBasicMove();
     return statSpeed.innerText;
 }
@@ -207,11 +208,16 @@ const displayCharacters = (res) => {
     console.dir(data);
     while(characterList.lastChild) 
         characterList.removeChild(characterList.lastChild);
+    if(data.length <= 0){
+        let li = document.createElement('li');
+        li.innerText = 'No characters found.';
+        characterList.append(li);
+    }
     for(let i=0; i<data.length; i++){
         let li = document.createElement('li');
         li.id = data[i]._id;
         li.className = (i%2 === 0) ? 'character alt0' : 'character alt1';
-        li.innerText = data[i].name;
+        li.innerText = data[i].name || 'no name';
         li.onclick = (e) => {
             let xhr = new XMLHttpRequest();
             xhr.open('GET', '/characters/'+data[i]._id);
@@ -223,6 +229,9 @@ const displayCharacters = (res) => {
             xhr.send();
             return;
         }
+        let deleteButton = document.createElement('button');
+        deleteButton.innerText = 'delete';
+        li.appendChild(deleteButton);
         characterList.appendChild(li);
     }
 }
@@ -246,23 +255,42 @@ const showListPage = () => {
 window.onload = () => {
     grabDocElements();
 
-    tabList.onclick = () => showListPage;
-    tabEdit.onclick = () => showEditPage;
+    tabList.onclick = showListPage;
+    tabEdit.onclick = showEditPage;
 
     document.querySelector('#saveCharacter').onclick = saveCharacter;
 
     handleList(advantages, 'advantage');
     handleList(disadvantages, 'disadvantage');
     handleList(skills, 'skill');
+    handleList(meleeWeapons, 'melee');
+    handleList(rangedWeapons, 'ranged');
+    handleList(armor, 'armor-piece');
+    handleList(possessions, 'item');
 
     advantages.onkeydown = handleList;
     disadvantages.onkeydown = handleList;
     skills.onkeydown = handleList;
 
     statST.onkeyup = () => calculateBasicLift;
-    statDX.onkeyup = () => calculateBasicSpeed;
-    statIQ.onkeyup = () => { calculatePer(); calculateWill(); }
-    statHT.onkeyup = () => calculateBasicSpeed;
+    statDX.onkeyup = () => {
+        calculateBasicSpeed();
+        calculateBasicMove();
+    }
+    statHT.onkeyup = () => {
+        calculateBasicSpeed();
+        calculateBasicMove();
+    }
 
     getCharacters(displayCharacters);
+}
+
+window.onkeydown = (e) => {
+    switch(e.keyCode){
+        case 32: // space
+        console.log(calculateBasicSpeed());
+        break;
+        default:
+        break;
+    }
 }
