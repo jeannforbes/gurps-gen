@@ -30,14 +30,20 @@ const startServer = () => {
         console.log('Connected to database.');
         // Handle character store/retrieval requests
         app.get('/characters', (req, res) => {
-            Character.find( (err, characters) => {
+            Character.find( (err, result) => {
                 if(err) return console.log(err);
-                console.log(characters);
-                return res.send(characters);
+                return res.send(result);
             });
         });
+        // Return a specific character by id
         app.get('/characters/*', (req, res) => {
-
+            let cid = req._parsedUrl.path.split('/')[2];
+            console.log(cid);
+            Character.find( { '_id':cid }, (err, result) => {
+                if(err) {console.log(err); return;}
+                res.status = 200;
+                return res.send(result);
+            })
         });
         app.post('/characters/*', (req, res) => {
             let character = new Character({

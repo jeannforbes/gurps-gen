@@ -11,14 +11,28 @@
 	<script src='index.js'></script>
 </head>
 <body>
-	<header>GURPS Character Generator</header>
-	<div id='navbar'><ul id='characters-list'></ul></div>
+	<header>
+		<div id='title'>GURPS Character Generator</div>
+		<div id='navbar'>
+			<ul>
+			<li id='list' class='active'>List</li>
+			<li id='edit'>Editor</li>
+			</ul>
+		</div>
+	</header>
+	<div id='list-container'>
+		<div class='box'>
+		<span> Existing Characters... </span>
+		<ul id='character-list'></ul>
+		</div>
+	</div>
 	
-	<div id='character-container'>
+	<div id='edit-container' style='display:none;'>
 		<div id='options'>
 			<div class='box'>
 				<button id='saveCharacter'>Save</button>
-				<button id='clearCharacter'>Clear</button>
+				<button id='saveCharacter'>Save New</button>
+				<button id='clearCharacter' style='float:'>Clear</button>
 			</div>
 		</div>
 		<div id='character-description' class='box'>

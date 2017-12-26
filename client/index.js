@@ -1,4 +1,6 @@
+let tabEdit, tabList;
 let charactersList;
+let characterEdit;
 
 // Character attribute elements
 let name;
@@ -17,7 +19,13 @@ let inventory, meleeWeapons, rangedWeapons, armor, possessions;
 const dq = (element) => { return document.querySelector(element); }
 
 const grabDocElements = () => {
-    charactersList = dq('#charactersList');
+    tabEdit = dq('#edit');
+    tabList = dq('#list');
+
+    listContainer = dq('#list-container');
+    editContainer = dq('#edit-container');
+
+    characterList = dq('#character-list');
 
     name = dq('#charName');
     player = dq('#charPlayer');
@@ -68,24 +76,6 @@ const makeListElement = () => {
     return span;
 }
 
-const makeCharacterElement = (data) => {
-    let li = document.createElement('li');
-    li.id = data._id;
-    li.className = 'character';
-    li.innerText = data.name;
-    li.onclick = (e) => {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/characters/'+data._id);
-        xhr.onload = (e) => {
-            console.dir(e.target.response);
-            li.className += 'active';
-        }
-        xhr.send();
-        return;
-    }
-    charactersList.appendChild(li);
-}
-
 const handleList = (e) => {
     let p, c, last;
     if(e.keyCode === 8) return;
@@ -112,7 +102,9 @@ const saveCharacter = () => {
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '/characters/'+name.value);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = (e) => { console.dir(e.target.response);};
+    xhr.onload = (e) => { 
+        console.dir(e.target.response);
+    };
     let reqBody = {
         name: name.value,
         player: player.value,
@@ -148,6 +140,33 @@ const saveCharacter = () => {
     return;
 }
 
+// Loads the given JSON information into the edit page's values
+const loadCharacter = (char) => {
+    console.log(char);
+    // Basic information
+    name.value = char['name'];
+    player.value = char.player;
+    height.value = char.description.height;
+    weight.value = char.description.weight;
+    sizeModifier.value = char.description.sizeModifier;
+    age.value = char.description.age;
+    appearance.value = char.description.appearance;
+    // Stats
+    statST.value = char.stats.ST;
+    statDX.value = char.stats.DX;
+    statIQ.value = char.stats.IQ;
+    statHT.value = char.stats.HT;
+    statHP.value = char.stats.HP;
+    statPer.value = char.stats.Per;
+    statWill.value = char.stats.Will;
+    statFP.value = char.stats.FP;
+    // Ads, Disads, Skills
+    for(let i=0; i<char.advantages.length; i++){
+        advantages.children[advantages.children.length-2].value = char.advantages[i];
+        handleList(advantages);
+    }
+}
+
 const calculatePer = () => {
     let offset = statPer.value - 10;
     statPer.value = statIQ.value + offset;
@@ -175,17 +194,60 @@ const calculateBasicSpeed = () => {
 }
 
 // Get all characters currently in the database
-const getCharacters = (e) => {
+const getCharacters = (cb) => {
     let xhr = new XMLHttpRequest();
     xhr.open('GET', '/characters');
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = (e) => { console.dir(e.target.response);};
+    xhr.onload = (res) => {cb(res)};
     xhr.send();
-    return;
+}
+
+const displayCharacters = (res) => {
+    let data = JSON.parse(res.currentTarget.response);
+    console.dir(data);
+    while(characterList.lastChild) 
+        characterList.removeChild(characterList.lastChild);
+    for(let i=0; i<data.length; i++){
+        let li = document.createElement('li');
+        li.id = data[i]._id;
+        li.className = (i%2 === 0) ? 'character alt0' : 'character alt1';
+        li.innerText = data[i].name;
+        li.onclick = (e) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', '/characters/'+data[i]._id);
+            xhr.onload = (e) => {
+                console.dir(e.target.response);
+                loadCharacter(JSON.parse(e.target.response)[0]);
+                showEditPage();
+            }
+            xhr.send();
+            return;
+        }
+        characterList.appendChild(li);
+    }
+}
+
+const showEditPage = () => {
+    editContainer.style.display = 'block';
+    listContainer.style.display = 'none';
+
+    tabEdit.className += 'active';
+    tabList.className = '';
+}
+
+const showListPage = () => {
+    listContainer.style.display = 'block';
+    editContainer.style.display = 'none';
+
+    tabList.className += 'active';
+    tabEdit.className = '';
 }
 
 window.onload = () => {
     grabDocElements();
+
+    tabList.onclick = () => showListPage;
+    tabEdit.onclick = () => showEditPage;
 
     document.querySelector('#saveCharacter').onclick = saveCharacter;
 
@@ -193,12 +255,14 @@ window.onload = () => {
     handleList(disadvantages, 'disadvantage');
     handleList(skills, 'skill');
 
-    advantages.onkeyup = handleList;
-    disadvantages.onkeyup = handleList;
-    skills.onkeyup = handleList;
+    advantages.onkeydown = handleList;
+    disadvantages.onkeydown = handleList;
+    skills.onkeydown = handleList;
 
     statST.onkeyup = () => calculateBasicLift;
     statDX.onkeyup = () => calculateBasicSpeed;
     statIQ.onkeyup = () => { calculatePer(); calculateWill(); }
     statHT.onkeyup = () => calculateBasicSpeed;
+
+    getCharacters(displayCharacters);
 }
