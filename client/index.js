@@ -2,6 +2,7 @@ let tabEdit, tabList;
 let charactersList;
 let characterEdit;
 
+let _id; // character's unique identifier
 // Character attribute elements
 let name;
 let player;
@@ -27,6 +28,7 @@ const grabDocElements = () => {
 
     characterList = dq('#character-list');
 
+    _id = dq('#_id');
     name = dq('#charName');
     player = dq('#charPlayer');
     height = dq('#charHeight');
@@ -104,14 +106,9 @@ const getChildrenValues = (parent) => {
     return result;
 }
 
-const saveCharacter = () => {
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', '/characters/'+name.value);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = (e) => { 
-        console.dir(e.target.response);
-    };
-    let reqBody = {
+getCharacterFromPage = (overwrite) => {
+    return {
+        overwrite: overwrite,
         name: name.value,
         player: player.value,
         description: {
@@ -141,8 +138,30 @@ const saveCharacter = () => {
             possessions  : getChildrenValues(possessions)
         }
     };
-    xhr.send(JSON.stringify(reqBody));
-    console.dir(reqBody);
+}
+
+const overwriteCharacter = () => {
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/characters/'+_id.innerText);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = (e) => {
+        console.log(e.target.response);
+        getCharacters(displayCharacters);
+    };
+    xhr.send(JSON.stringify(getCharacterFromPage(true)));
+    return;
+}
+
+const saveNewCharacter = () => {
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/characters/thisiddont');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = (e) => { 
+        console.log(e.target.response);
+        getCharacters(displayCharacters);
+        showListPage();
+    };
+    xhr.send(JSON.stringify(getCharacterFromPage()));
     return;
 }
 
@@ -150,6 +169,7 @@ const saveCharacter = () => {
 const loadCharacter = (char) => {
     console.log(char);
     // Basic information
+    _id.innerText = char._id;
     name.value = char['name'];
     player.value = char.player;
     height.value = char.description.height;
@@ -205,7 +225,6 @@ const getCharacters = (cb) => {
 
 const displayCharacters = (res) => {
     let data = JSON.parse(res.currentTarget.response);
-    console.dir(data);
     while(characterList.lastChild) 
         characterList.removeChild(characterList.lastChild);
     if(data.length <= 0){
@@ -213,24 +232,38 @@ const displayCharacters = (res) => {
         li.innerText = 'No characters found.';
         characterList.append(li);
     }
+    // Loop through the retrieved characters
     for(let i=0; i<data.length; i++){
         let li = document.createElement('li');
-        li.id = data[i]._id;
         li.className = (i%2 === 0) ? 'character alt0' : 'character alt1';
-        li.innerText = data[i].name || 'no name';
-        li.onclick = (e) => {
+        let span = document.createElement('span');
+        span.id = data[i]._id;
+        span.innerText = data[i].name || 'no name';
+        span.onclick = (e) => {
             let xhr = new XMLHttpRequest();
             xhr.open('GET', '/characters/'+data[i]._id);
             xhr.onload = (e) => {
                 console.dir(e.target.response);
                 loadCharacter(JSON.parse(e.target.response)[0]);
                 showEditPage();
-            }
+            };
             xhr.send();
             return;
-        }
+        };
+        // Make the delete button
         let deleteButton = document.createElement('button');
         deleteButton.innerText = 'delete';
+        deleteButton.onclick = (e) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open('DELETE', '/characters/'+data[i]._id);
+            xhr.onload = (e) => {
+                console.dir(e.target.response);
+                getCharacters(displayCharacters);
+            };
+            xhr.send();
+            return;
+        };
+        li.appendChild(span);
         li.appendChild(deleteButton);
         characterList.appendChild(li);
     }
@@ -258,7 +291,8 @@ window.onload = () => {
     tabList.onclick = showListPage;
     tabEdit.onclick = showEditPage;
 
-    document.querySelector('#saveCharacter').onclick = saveCharacter;
+    document.querySelector('#updateCharacter').onclick = overwriteCharacter;
+    document.querySelector('#saveNewCharacter').onclick = saveNewCharacter;
 
     handleList(advantages, 'advantage');
     handleList(disadvantages, 'disadvantage');
@@ -288,7 +322,6 @@ window.onload = () => {
 window.onkeydown = (e) => {
     switch(e.keyCode){
         case 32: // space
-        console.log(calculateBasicSpeed());
         break;
         default:
         break;

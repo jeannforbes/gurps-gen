@@ -3,7 +3,8 @@ let Schema = mongoose.Schema;
 
 let characterSchema = new Schema({
     meta: {
-        created: Date
+        created: Date,
+        updated: Date
     },
     name: String,
     player: String,

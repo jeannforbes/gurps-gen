@@ -53,6 +53,12 @@ textarea{
 	min-height: 50px;
 }
 
+li span{
+	width: 85%;
+	height: 40px;
+	font-size: 20px;
+}
+
 /*
  *  CLASSES
  */

@@ -28,66 +28,126 @@ const startServer = () => {
     db.on('error', console.error.bind(console, 'connection error: '));
     db.once('open', () => {
         console.log('Connected to database.');
-        // Handle character store/retrieval requests
+        // Handles character store/retrieval requests
         app.get('/characters', (req, res) => {
             Character.find( (err, result) => {
                 if(err) return console.log(err);
                 return res.send(result);
             });
         });
-        // Return a specific character by id
+        // Return the specified character by id
         app.get('/characters/*', (req, res) => {
             let cid = req._parsedUrl.path.split('/')[2];
-            console.log(cid);
+            console.log('Finding character at '+cid);
             Character.find( { '_id':cid }, (err, result) => {
                 if(err) {console.log(err); return;}
                 res.status = 200;
                 return res.send(result);
             })
         });
-        app.post('/characters/*', (req, res) => {
-            let character = new Character({
-                meta: {
-                    created: new Date()
-                },
-                name: req.body.name,
-                player: req.body.player,
-                pointsTotal: req.body.pointsTotal,
-                pointsUnspent: req.body.pointsUnspent,
-                description: {
-                    height      : req.body.description.height,
-                    weight      : req.body.description.weight,
-                    sizeModifier: req.body.description.sizeModifier,
-                    age         : req.body.description.age,
-                    appearance  : req.body.description.appearance
-                },
-                stats: {
-                    ST  : parseInt(req.body.stats.ST) || 10,
-                    DX  : parseInt(req.body.stats.DX) || 10,
-                    IQ  : parseInt(req.body.stats.IQ) || 10,
-                    HT  : parseInt(req.body.stats.HT) || 10,
-                    HP  : parseInt(req.body.stats.HP) 
-                       || parseInt(req.body.stats.ST) || 10,
-                    Will: parseInt(req.body.stats.Will) 
-                       || parseInt(req.body.stats.IQ) || 10,
-                    Per : parseInt(req.body.stats.Per) 
-                       || parseInt(req.body.stats.IQ) || 10,
-                    FP  : parseInt(req.body.stats.FP) 
-                       || parseInt(req.body.stats.HT) || 10
-                },
-                advantages   : req.body.advantages,
-                disadvantages: req.body.disadvantages,
-                skills       : req.body.skills,
-                inventory: {
-                    meleeWeapons : req.body.meleeWeapons,
-                    rangedWeapons: req.body.rangedWeapons,
-                    armor        : req.body.armor,
-                    possessions  : req.body.possessions
-                }
+        // Deletes the specified character from the database
+        app.delete('/characters/*', (req, res) => {
+            let cid = req._parsedUrl.path.split('/')[2];
+            console.log('Deleting character at '+cid);
+            Character.find({'_id':cid}).remove( (err) => {
+                if(err) { console.log(err); return; }
+                res.status = 200;
+                return res.send({msg: 'deleted character at '+cid});
             });
-            character.save();
-            res.status = 200;
-            res.send({msg: 'Added character to database'});
+        });
+        // Add a new document to the database
+        app.post('/characters/*', (req, res) => {
+            let cid = req._parsedUrl.path.split('/')[2];
+            console.log('POSTing to '+cid, req.body.overwrite);
+            if(!req.body.overwrite){
+                let character = new Character({
+                    meta: {
+                        created: new Date(),
+                        updated: new Date()
+                    },
+                    name: req.body.name,
+                    player: req.body.player,
+                    pointsTotal: req.body.pointsTotal || 0,
+                    pointsUnspent: req.body.pointsUnspent || 0,
+                    description: {
+                        height      : req.body.description.height,
+                        weight      : req.body.description.weight,
+                        sizeModifier: req.body.description.sizeModifier,
+                        age         : req.body.description.age,
+                        appearance  : req.body.description.appearance
+                    },
+                    stats: {
+                        ST  : parseInt(req.body.stats.ST) || 10,
+                        DX  : parseInt(req.body.stats.DX) || 10,
+                        IQ  : parseInt(req.body.stats.IQ) || 10,
+                        HT  : parseInt(req.body.stats.HT) || 10,
+                        HP  : parseInt(req.body.stats.HP) 
+                           || parseInt(req.body.stats.ST) || 10,
+                        Will: parseInt(req.body.stats.Will) 
+                           || parseInt(req.body.stats.IQ) || 10,
+                        Per : parseInt(req.body.stats.Per) 
+                           || parseInt(req.body.stats.IQ) || 10,
+                        FP  : parseInt(req.body.stats.FP) 
+                           || parseInt(req.body.stats.HT) || 10
+                    },
+                    advantages   : req.body.advantages,
+                    disadvantages: req.body.disadvantages,
+                    skills       : req.body.skills,
+                    inventory: {
+                        meleeWeapons : req.body.meleeWeapons,
+                        rangedWeapons: req.body.rangedWeapons,
+                        armor        : req.body.armor,
+                        possessions  : req.body.possessions
+                    }
+                });
+                character.save();
+                res.status = 200;
+                res.send({msg: 'Added character to database'});
+            }
+            // Otherwise, overwrite the existing character
+            else {
+                Character.update({_id:cid}, { $set: 
+                  { meta: { updated: new Date() },
+                    name: req.body.name,
+                    player: req.body.player,
+                    pointsTotal: req.body.pointsTotal || 0,
+                    pointsUnspent: req.body.pointsUnspent || 0,
+                    description: {
+                        height      : req.body.description.height,
+                        weight      : req.body.description.weight,
+                        sizeModifier: req.body.description.sizeModifier,
+                        age         : req.body.description.age,
+                        appearance  : req.body.description.appearance
+                    },
+                    stats: {
+                        ST  : parseInt(req.body.stats.ST) || 10,
+                        DX  : parseInt(req.body.stats.DX) || 10,
+                        IQ  : parseInt(req.body.stats.IQ) || 10,
+                        HT  : parseInt(req.body.stats.HT) || 10,
+                        HP  : parseInt(req.body.stats.HP) 
+                           || parseInt(req.body.stats.ST) || 10,
+                        Will: parseInt(req.body.stats.Will) 
+                           || parseInt(req.body.stats.IQ) || 10,
+                        Per : parseInt(req.body.stats.Per) 
+                           || parseInt(req.body.stats.IQ) || 10,
+                        FP  : parseInt(req.body.stats.FP) 
+                           || parseInt(req.body.stats.HT) || 10
+                    },
+                    advantages   : req.body.advantages,
+                    disadvantages: req.body.disadvantages,
+                    skills       : req.body.skills,
+                    inventory: {
+                        meleeWeapons : req.body.meleeWeapons,
+                        rangedWeapons: req.body.rangedWeapons,
+                        armor        : req.body.armor,
+                        possessions  : req.body.possessions
+                    }
+                }}, (err) => {
+                    if(err) { console.log(err); return; }
+                    res.status = 200;
+                    res.send({msg: 'Updated character'});
+                });
+            }
         });
     });
 
